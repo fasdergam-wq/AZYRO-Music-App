@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#09060f">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="application-name" content="AZYRO">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AZYRO">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+<title>AZYRO — Music Without Limits</title>
+<style>
+:root{color-scheme:dark;--bg:#09060f;--panel:#151020;--panel2:#21152f;--purple:#a855f7;--pink:#e879f9;--muted:#a99ab8;--line:#38234c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#40205c 0%,#130c1d 42%,var(--bg) 78%);color:#fff;font-family:Inter,Arial,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{width:min(100%,980px);margin:auto;padding:24px 22px 120px}
+header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:28px}
+.brand{font-weight:900;font-size:30px;letter-spacing:5px;background:linear-gradient(90deg,#fff,#d8a4ff,#a855f7);background-clip:text;color:transparent}
+.tag{font-size:10px;letter-spacing:3px;color:#b9a4ca;margin-top:3px}
+.header-actions{display:flex;gap:9px}
+.icon-btn,.nav-btn{border:1px solid var(--line);background:#1b1127;color:#eadcf5;border-radius:14px;padding:11px 14px}
+h1{font-size:clamp(28px,5vw,42px);margin:8px 0}
+.subtitle{color:var(--muted);margin:0 0 22px}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:center;padding:26px;border:1px solid #573477;border-radius:26px;background:linear-gradient(120deg,#241332,#130d1e 65%,#2a1240);box-shadow:0 18px 60px #0008}
+.hero p{color:#c4b3d1;line-height:1.5}
+.primary,.secondary{border:0;border-radius:14px;padding:13px 18px;font-weight:700}
+.primary{background:linear-gradient(100deg,#9333ea,#c026d3);color:white;box-shadow:0 8px 25px #a855f755}
+.secondary{background:#30203f;color:#f1ddff;border:1px solid #56366f}
+.hero-art{height:175px;border-radius:20px;background:radial-gradient(circle at 50% 45%,#d946ef55,transparent 40%),linear-gradient(145deg,#54217a,#160c24);display:grid;place-items:center;font-size:76px;color:#e9b7ff;text-shadow:0 0 35px #d946ef}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin:28px 0 13px}
+.section-head h2{font-size:19px;margin:0}
+.muted{color:var(--muted);font-size:13px}
+.tools{display:flex;gap:10px;flex-wrap:wrap}
+.search{flex:1;min-width:180px;background:#171020;border:1px solid var(--line);border-radius:13px;padding:13px 15px;color:#fff;outline:none}
+.search:focus{border-color:var(--purple)}
+.track-list{display:grid;gap:8px}
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:12px;margin-top:12px}
+.album-card{border:1px solid var(--line);background:linear-gradient(145deg,#241332,#130d1e);border-radius:16px;padding:12px;text-align:left;color:#fff;min-width:0;transition:transform .18s,border-color .18s}
+.album-card:hover{transform:translateY(-3px);border-color:#a855f7}
+.album-art{width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(145deg,#a855f7,#32104d);font-size:38px;margin-bottom:9px}
+.album-art img{width:100%;height:100%;object-fit:cover}
+.album-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.album-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.sort-select{background:#171020;border:1px solid var(--line);border-radius:12px;padding:10px;color:#fff}
+.track,.playlist-panel,.queue-panel,.hero{animation:fade-up .35s ease both}
+@keyframes fade-up{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.track{display:flex;align-items:center;gap:12px;padding:10px;background:#151020;border:1px solid transparent;border-radius:15px;min-width:0}
+.track.current{border-color:#a855f7;background:#21132f}
+.cover{width:48px;height:48px;flex:0 0 48px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#a855f7,#32104d);font-size:22px;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover}
+.cover-tools{display:flex;align-items:center;gap:4px}
+.cover-tools button{font-size:11px!important;border:1px solid var(--line)!important;border-radius:9px!important;background:#21152f!important;padding:7px!important}
+.cover-tools input{display:none}
+.edit-track{font-size:15px!important}
+.now-playing-overlay{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 25%,#492064,#100b18 65%);text-align:center}
+.now-playing-overlay.open{display:flex}
+.now-playing-inner{width:min(440px,100%);display:flex;flex-direction:column;align-items:center;gap:18px}
+.now-playing-art{width:min(68vw,320px);aspect-ratio:1;border-radius:28px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(145deg,#b35cff,#271039);font-size:100px;box-shadow:0 20px 70px #0009}
+.now-playing-art img{width:100%;height:100%;object-fit:cover}
+.now-playing-title{font-size:24px;font-weight:800;overflow-wrap:anywhere}
+.now-playing-artist{color:var(--muted)}
+.now-playing-actions{display:flex;gap:18px;align-items:center}
+.now-playing-actions button{border:1px solid #694487;background:#241333;color:white;border-radius:50%;width:52px;height:52px;font-size:20px}
+.now-playing-actions .main-play{width:68px;height:68px;background:#8b35c8;font-size:25px}
+.now-playing-close{position:absolute;top:22px;right:22px;border:1px solid #694487;background:#241333;color:white;border-radius:50%;width:44px;height:44px;font-size:22px}
+.track-info{min-width:0;flex:1}
+.track-title{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track-artist{font-size:12px;color:var(--muted);margin-top:4px}
+.track button{border:0;background:transparent;color:#d8c4e7;padding:8px}
+.empty{padding:25px;text-align:center;color:var(--muted);background:#151020;border:1px dashed #49315c;border-radius:16px;line-height:1.6}
+.player{position:fixed;z-index:5;bottom:0;left:0;right:0;background:#100b18ed;backdrop-filter:blur(18px);border-top:1px solid #51316a;padding:12px max(16px,calc((100vw - 940px)/2))}
+.player-top{display:flex;align-items:center;gap:12px}
+.player-meta{min-width:0;flex:1}
+.player-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-artist{font-size:11px;color:var(--muted);margin-top:3px}
+.play-controls{display:flex;align-items:center;gap:7px}
+.play-controls button{border:0;background:transparent;color:white;font-size:18px;padding:8px}
+.play-controls .play{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#9333ea,#c026d3);font-size:17px}
+.progress-row{display:flex;align-items:center;gap:9px;margin-top:8px;font-size:10px;color:var(--muted)}
+input[type=range]{accent-color:#c084fc;min-width:0}
+#progress{flex:1}
+.playlist-panel{margin-top:24px;padding:16px;border:1px solid var(--line);border-radius:18px;background:#151020}
+.playlist-create{display:flex;gap:8px;margin:12px 0}
+.playlist-create input{flex:1;min-width:0;background:#0e0915;border:1px solid var(--line);border-radius:12px;padding:11px 12px;color:#fff}
+.playlist-items{display:flex;gap:8px;flex-wrap:wrap}
+.playlist-chip{border:1px solid var(--line);background:#21152f;color:#eadcf5;border-radius:12px;padding:9px 12px}
+.playlist-chip.active{border-color:#a855f7;background:#39204f;color:#fff}
+.track .add-playlist{font-size:17px}
+.queue-panel{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:18px;background:#151020}
+.queue-items{display:grid;gap:7px;margin-top:10px}
+.queue-item,.history-item{display:flex;align-items:center;gap:10px;padding:9px 11px;background:#21152f;border-radius:11px;color:#eadcf5}
+.queue-item span,.history-item span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.queue-item button{border:0;background:transparent;color:#d8c4e7;padding:5px}
+.history-list{display:grid;gap:7px;margin-top:10px}
+.bottom-nav{display:flex;justify-content:center;gap:8px;margin-top:25px;flex-wrap:wrap}
+.nav-btn.active{border-color:#a855f7;background:#321747;color:#fff}
+#fileInput{display:none}
+#status{font-size:12px;color:#c4a9d8;min-height:18px;margin-top:13px}
+@media(max-width:620px){.app{padding:18px 14px 145px}.hero{grid-template-columns:1fr;padding:20px}.hero-art{height:110px;font-size:52px}.brand{font-size:25px}.player{padding:10px 12px}.play-controls{gap:1px;flex-wrap:wrap;justify-content:flex-end}.play-controls button{padding:5px;font-size:16px}.track{gap:7px;padding:8px}.track .cover-tools button{padding:5px!important}.track button{padding:5px}.album-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tools{gap:7px}.sort-select{flex:1;min-width:130px}.now-playing-overlay{padding:16px}}
+
+.pwa-install{position:fixed;right:16px;bottom:112px;z-index:8;border:1px solid #8b45b6;border-radius:14px;padding:10px 14px;background:linear-gradient(135deg,#7134a1,#32104d);color:#fff;font-weight:700;box-shadow:0 8px 28px #0008;display:none}
+.pwa-tip{position:fixed;left:16px;right:16px;bottom:112px;z-index:8;padding:13px 15px;border:1px solid #694487;border-radius:14px;background:#1a1025;color:#eee;display:none;font-size:13px;line-height:1.45}
+.pwa-tip button{float:right;border:0;background:transparent;color:#fff;font-size:18px}
+
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+  <div><div class="brand">AZYRO</div><div class="tag">MUSIC WITHOUT LIMITS</div></div>
+  <div class="header-actions">
+    <button class="icon-btn" id="addTop" title="Добавить музыку">＋</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <div class="muted">ТВОЯ МУЗЫКА. ТВОИ ПРАВИЛА.</div>
+    <h1>Музыка без границ</h1>
+    <p>Собери свою библиотеку, добавляй аудиофайлы и слушай их в одном месте.</p>
+    <button class="primary" id="addButton">＋ Добавить музыку</button>
+  </div>
+  <div class="hero-art" aria-hidden="true">♫</div>
+</section>
+
+<div class="section-head"><h2 id="listHeading">Моя музыка</h2><span class="muted" id="trackCount">0 треков</span></div>
+<div class="tools">
+  <input class="search" id="search" type="search" placeholder="Поиск трека или исполнителя…">
+  <button class="secondary" id="favoritesFilter">♡ Избранное</button>
+  <button class="secondary" id="allFilter">Все треки</button>
+  <select class="sort-select" id="sortTracks" aria-label="Сортировка">
+    <option value="added">Сначала новые</option><option value="title">По названию</option><option value="artist">По исполнителю</option><option value="album">По альбому</option>
+  </select>
+</div>
+<section class="playlist-panel">
+  <div class="section-head" style="margin:0"><h2>Альбомы</h2><span class="muted" id="albumCount">0 альбомов</span></div>
+  <div class="album-grid" id="albumGrid"><span class="muted">Альбомы появятся после добавления музыки.</span></div>
+</section>
+<section class="playlist-panel">
+  <div class="section-head" style="margin:0"><h2>Мои плейлисты</h2><span class="muted" id="playlistCount">0 плейлистов</span></div>
+  <div class="playlist-create">
+    <input id="playlistName" type="text" maxlength="40" placeholder="Название нового плейлиста…">
+    <button class="primary" id="createPlaylist">＋ Создать</button>
+  </div>
+  <div class="playlist-items" id="playlistItems"><span class="muted">Создай первый плейлист</span></div>
+  <p class="muted" id="playlistHint">Выбери плейлист, затем нажимай ＋ у песен, чтобы добавлять их.</p>
+</section>
+<section class="queue-panel">
+  <div class="section-head" style="margin:0"><h2>Очередь воспроизведения</h2><button class="playlist-chip" id="clearQueue">Очистить</button></div>
+  <div class="queue-items" id="queueItems"><span class="muted">Очередь пока пуста. Добавляй песни кнопкой ⇥.</span></div>
+</section>
+<section class="queue-panel">
+  <div class="section-head" style="margin:0"><h2>Недавно прослушано</h2><button class="playlist-chip" id="clearHistory">Очистить</button></div>
+  <div class="history-list" id="historyItems"><span class="muted">Здесь появятся твои прослушанные треки.</span></div>
+</section>
+<div class="section-head"><h2>Твоя библиотека</h2><span class="muted">Локально на устройстве</span></div>
+<div class="track-list" id="trackList"><div class="empty">Загружаем библиотеку…</div></div>
+<div id="status" role="status">AZYRO готовится к запуску…</div>
+<div class="bottom-nav">
+  <button class="nav-btn active" data-view="all">⌂ Главная</button>
+  <button class="nav-btn" data-view="favorites">♡ Избранное</button>
+  <button class="nav-btn" data-view="albums">▦ Альбомы</button>
+</div>
+</main>
+
+<div class="player">
+  <div class="player-top">
+    <div class="cover" id="playerCover">♫</div>
+    <div class="player-meta">
+      <div class="player-title" id="nowTitle">Ничего не играет</div>
+      <div class="player-artist" id="nowArtist">Добавь свои аудиофайлы</div>
+    </div>
+    <div class="play-controls">
+      <button id="openNowPlaying" title="Открыть на весь экран">⛶</button>
+      <button id="shuffle" title="Перемешать">⤨</button>
+      <button id="previous" title="Предыдущий трек">⏮</button>
+      <button class="play" id="playPause" title="Воспроизвести">▶</button>
+      <button id="next" title="Следующий трек">⏭</button>
+      <button id="repeat" title="Повтор">↻</button>
+    </div>
+  </div>
+  <div class="progress-row">
+    <span id="elapsed">0:00</span>
+    <input id="progress" type="range" min="0" max="1000" value="0">
+    <span id="duration">0:00</span>
+  </div>
+</div>
+
+<button class="pwa-install" id="installApp">＋ Установить AZYRO</button>
+<div class="pwa-tip" id="iosInstallTip"><button id="closeIosTip" aria-label="Закрыть">×</button><b>Установка на iPhone</b><br>Нажми «Поделиться» в Safari → «На экран Домой» → «Добавить».</div>
+<input id="fileInput" type="file" accept="audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac" multiple>
+<section class="now-playing-overlay" id="nowPlayingOverlay" aria-hidden="true">
+  <button class="now-playing-close" id="closeNowPlaying" title="Закрыть">×</button>
+  <div class="now-playing-inner">
+    <div class="now-playing-art" id="bigCover">♫</div>
+    <div class="now-playing-title" id="bigTitle">Ничего не играет</div>
+    <div class="now-playing-artist" id="bigArtist">AZYRO</div>
+    <div class="now-playing-actions">
+      <button id="bigPrevious">⏮</button><button class="main-play" id="bigPlay">▶</button><button id="bigNext">⏭</button>
+    </div>
+    <div class="muted">AZYRO · MUSIC WITHOUT LIMITS</div>
+  </div>
+</section>
+<audio id="audio" preload="metadata"></audio>
+
+<script>
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const audio = $('audio');
+  const fileInput = $('fileInput');
+  const trackList = $('trackList');
+  const statusBox = $('status');
+  let db = null;
+  let tracks = [];
+  let playlists = [];
+  let selectedPlaylistId = null;
+  let selectedAlbum = null;
+  let activeQueue = null;
+  let currentId = null;
+  let currentUrl = null;
+  let view = 'all';
+  let shuffled = false;
+  let repeatMode = 0; // 0 — выкл., 1 — один трек, 2 — весь список
+  let playOrder = [];
+  let queueIds = [];
+  let historyIds = [];
+  try{ historyIds = JSON.parse(localStorage.getItem('azyro_history') || '[]'); }catch(e){ historyIds = []; }
+
+  function setStatus(message){ statusBox.textContent = message; }
+  function makeId(){
+    return (crypto && crypto.randomUUID) ? crypto.randomUUID() :
+      'azyro-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+  }
+  function formatTime(seconds){
+    if(!Number.isFinite(seconds) || seconds < 0) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return m + ':' + String(s).padStart(2,'0');
+  }
+  function openDatabase(){
+    return new Promise((resolve,reject) => {
+      if(!('indexedDB' in window)){ reject(new Error('Браузер не поддерживает локальное хранилище')); return; }
+      const request = indexedDB.open('AZYRO_LIBRARY', 2);
+      request.onupgradeneeded = () => {
+        const database = request.result;
+        if(!database.objectStoreNames.contains('tracks')){
+          database.createObjectStore('tracks', {keyPath:'id'});
+        }
+        if(!database.objectStoreNames.contains('playlists')){
+          database.createObjectStore('playlists', {keyPath:'id'});
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error('Не удалось открыть хранилище'));
+      request.onblocked = () => setStatus('Закрой другие вкладки AZYRO и обнови страницу.');
+    });
+  }
+  function transaction(mode, action){
+    return new Promise((resolve,reject) => {
+      try{
+        const tx = db.transaction('tracks', mode);
+        const store = tx.objectStore('tracks');
+        let request;
+        if(action.type === 'all') request = store.getAll();
+        else if(action.type === 'put') request = store.put(action.value);
+        else if(action.type === 'delete') request = store.delete(action.value);
+        if(request){
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        }
+        tx.onabort = () => reject(tx.error || new Error('Операция отменена'));
+        tx.onerror = () => reject(tx.error || new Error('Ошибка базы данных'));
+        if(!request) tx.oncomplete = () => resolve();
+      }catch(error){ reject(error); }
+    });
+  }
+  function playlistTransaction(mode, action){
+    return new Promise((resolve,reject) => {
+      try{
+        const tx = db.transaction('playlists', mode);
+        const store = tx.objectStore('playlists');
+        let request;
+        if(action.type === 'all') request = store.getAll();
+        else if(action.type === 'put') request = store.put(action.value);
+        else if(action.type === 'delete') request = store.delete(action.value);
+        if(request){
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        }
+        tx.onabort = () => reject(tx.error || new Error('Операция отменена'));
+        tx.onerror = () => reject(tx.error || new Error('Ошибка плейлистов'));
+        if(!request) tx.oncomplete = () => resolve();
+      }catch(error){ reject(error); }
+    });
+  }
+  function selectedPlaylist(){ return playlists.find(p => p.id === selectedPlaylistId) || null; }
+  async function createPlaylist(){
+    const name = $('playlistName').value.trim();
+    if(!name){ setStatus('Введи название плейлиста.'); $('playlistName').focus(); return; }
+    if(playlists.some(p => p.name.toLocaleLowerCase('ru') === name.toLocaleLowerCase('ru'))){
+      setStatus('Плейлист с таким названием уже есть.'); return;
+    }
+    const playlist = {id:makeId(), name, trackIds:[]};
+    try{
+      await playlistTransaction('readwrite',{type:'put',value:playlist});
+      playlists.push(playlist); selectedPlaylistId = playlist.id;
+      $('playlistName').value = '';
+      view = 'playlist'; activeQueue = playlist.trackIds.slice();
+      syncNav(); renderPlaylists(); render();
+      setStatus('Плейлист «' + name + '» создан.');
+    }catch(error){ setStatus('Не удалось создать плейлист.'); }
+  }
+  async function addToSelectedPlaylist(track){
+    const playlist = selectedPlaylist();
+    if(!playlist){ setStatus('Сначала выбери или создай плейлист.'); return; }
+    if(playlist.trackIds.includes(track.id)){ setStatus('Этот трек уже есть в плейлисте.'); return; }
+    playlist.trackIds.push(track.id);
+    try{
+      await playlistTransaction('readwrite',{type:'put',value:playlist});
+      renderPlaylists(); render();
+      setStatus('Добавлено в «' + playlist.name + '».');
+    }catch(error){ playlist.trackIds.pop(); setStatus('Не удалось добавить трек в плейлист.'); }
+  }
+  async function removeFromPlaylist(trackId){
+    const playlist = selectedPlaylist();
+    if(!playlist) return;
+    playlist.trackIds = playlist.trackIds.filter(id => id !== trackId);
+    try{
+      await playlistTransaction('readwrite',{type:'put',value:playlist});
+      if(activeQueue) activeQueue = activeQueue.filter(id => id !== trackId);
+      renderPlaylists(); render();
+      setStatus('Трек убран из плейлиста.');
+    }catch(error){ setStatus('Не удалось обновить плейлист.'); }
+  }
+  async function deletePlaylist(id){
+    const playlist = playlists.find(p => p.id === id);
+    if(!playlist || !confirm('Удалить плейлист «' + playlist.name + '»? Сами песни останутся в библиотеке.')) return;
+    try{
+      await playlistTransaction('readwrite',{type:'delete',value:id});
+      playlists = playlists.filter(p => p.id !== id);
+      if(selectedPlaylistId === id){ selectedPlaylistId = null; activeQueue = null; view = 'all'; }
+      syncNav(); renderPlaylists(); render();
+      setStatus('Плейлист удалён. Музыка осталась в библиотеке.');
+    }catch(error){ setStatus('Не удалось удалить плейлист.'); }
+  }
+  function renderPlaylists(){
+    const host = $('playlistItems');
+    host.replaceChildren();
+    $('playlistCount').textContent = playlists.length + (playlists.length === 1 ? ' плейлист' : ' плейлистов');
+    if(!playlists.length){ const hint=document.createElement('span'); hint.className='muted'; hint.textContent='Создай первый плейлист'; host.appendChild(hint); return; }
+    for(const playlist of playlists){
+      const chip=document.createElement('button');
+      chip.className='playlist-chip' + (playlist.id===selectedPlaylistId?' active':'');
+      chip.textContent='♫ ' + playlist.name + ' · ' + playlist.trackIds.length;
+      chip.addEventListener('click',()=>{selectedPlaylistId=playlist.id;view='playlist';activeQueue=playlist.trackIds.slice();syncNav();renderPlaylists();render();});
+      const del=document.createElement('button');
+      del.className='playlist-chip'; del.textContent='✕'; del.title='Удалить плейлист';
+      del.addEventListener('click',()=>deletePlaylist(playlist.id));
+      host.append(chip,del);
+    }
+  }
+  function saveHistory(){
+    try{ localStorage.setItem('azyro_history', JSON.stringify(historyIds.slice(0,30))); }catch(e){}
+  }
+  function addToQueue(track){
+    if(!track || track.id===currentId || queueIds.includes(track.id)){ setStatus('Этот трек уже играет или есть в очереди.'); return; }
+    queueIds.push(track.id); renderQueue();
+    setStatus('Добавлено в очередь: ' + (track.title || track.name));
+  }
+  function renderQueue(){
+    const host=$('queueItems'); host.replaceChildren();
+    const valid=queueIds.map(id=>tracks.find(t=>t.id===id)).filter(Boolean);
+    if(!valid.length){const empty=document.createElement('span');empty.className='muted';empty.textContent='Очередь пока пуста. Добавляй песни кнопкой ⇥.';host.appendChild(empty);return;}
+    valid.forEach((track,index)=>{
+      const row=document.createElement('div');row.className='queue-item';
+      const name=document.createElement('span');name.textContent=(index+1)+'. '+(track.title||track.name);
+      const play=document.createElement('button');play.textContent='▶';play.title='Играть сейчас';
+      play.addEventListener('click',()=>{queueIds.splice(index,1);playTrack(track.id);renderQueue();});
+      const remove=document.createElement('button');remove.textContent='✕';remove.title='Убрать из очереди';
+      remove.addEventListener('click',()=>{queueIds=queueIds.filter(id=>id!==track.id);renderQueue();});
+      row.append(name,play,remove);host.appendChild(row);
+    });
+  }
+  function renderHistory(){
+    const host=$('historyItems');host.replaceChildren();
+    const recent=historyIds.map(id=>tracks.find(t=>t.id===id)).filter(Boolean).slice(0,10);
+    if(!recent.length){const empty=document.createElement('span');empty.className='muted';empty.textContent='Здесь появятся твои прослушанные треки.';host.appendChild(empty);return;}
+    recent.forEach(track=>{
+      const row=document.createElement('div');row.className='history-item';
+      const name=document.createElement('span');name.textContent=(track.title||track.name)+' — '+(track.artist||'Неизвестный исполнитель');
+      const play=document.createElement('button');play.className='playlist-chip';play.textContent='▶';
+      play.addEventListener('click',()=>playTrack(track.id));row.append(name,play);host.appendChild(row);
+    });
+  }
+  function currentTrack(){ return tracks.find(t => t.id === currentId) || null; }
+  function albumName(track){ return (track.album || '').trim() || 'Без альбома'; }
+  function renderAlbums(){
+    const host=$('albumGrid');host.replaceChildren();
+    const groups=new Map();
+    tracks.forEach(track=>{const name=albumName(track);if(!groups.has(name))groups.set(name,[]);groups.get(name).push(track);});
+    $('albumCount').textContent=groups.size+' альбомов';
+    if(!groups.size){const empty=document.createElement('span');empty.className='muted';empty.textContent='Альбомы появятся после добавления музыки.';host.appendChild(empty);return;}
+    [...groups.entries()].sort((a,b)=>a[0].localeCompare(b[0],'ru')).forEach(([name,items])=>{
+      const card=document.createElement('button');card.className='album-card';card.type='button';
+      const art=document.createElement('div');art.className='album-art';
+      const coverTrack=items.find(t=>t.cover);
+      if(coverTrack){const img=document.createElement('img');img.src=coverTrack.cover;img.alt='';art.appendChild(img);}else art.textContent='♫';
+      const title=document.createElement('div');title.className='album-name';title.textContent=name;
+      const sub=document.createElement('div');sub.className='album-sub';sub.textContent=items.length+' треков · '+(items[0].artist||'Разные исполнители');
+      card.append(art,title,sub);
+      card.addEventListener('click',()=>{selectedAlbum=name;view='albums';activeQueue=null;syncNav();render();});
+      host.appendChild(card);
+    });
+  }
+  function visibleTracks(){
+    const query = $('search').value.trim().toLocaleLowerCase('ru');
+    const result=tracks.filter(t => {
+      const activePlaylist = selectedPlaylist();
+      const matchesView = view === 'favorites' ? t.favorite :
+        view === 'playlist' ? !!activePlaylist && activePlaylist.trackIds.includes(t.id) :
+        view === 'albums' ? (!selectedAlbum || albumName(t)===selectedAlbum) : true;
+      const matchesQuery = !query || (t.title + ' ' + t.artist + ' ' + t.album + ' ' + t.name).toLocaleLowerCase('ru').includes(query);
+      return matchesView && matchesQuery;
+    });
+    const sort=$('sortTracks')?.value || 'added';
+    if(sort==='title') result.sort((a,b)=>(a.title||a.name).localeCompare(b.title||b.name,'ru'));
+    if(sort==='artist') result.sort((a,b)=>(a.artist||'').localeCompare(b.artist||'','ru'));
+    if(sort==='album') result.sort((a,b)=>albumName(a).localeCompare(albumName(b),'ru'));
+    return result;
+  }
+
+  function render(){
+    renderAlbums();
+    const list = visibleTracks();
+    $('trackCount').textContent = tracks.length + (tracks.length === 1 ? ' трек' : tracks.length > 1 && tracks.length < 5 ? ' трека' : ' треков');
+    $('listHeading').textContent = view === 'favorites' ? 'Избранное' : view === 'playlist' ? (selectedPlaylist()?.name || 'Плейлист') : view === 'albums' ? (selectedAlbum || 'Все альбомы') : 'Моя музыка';
+    trackList.replaceChildren();
+    if(!list.length){
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = tracks.length ? 'Здесь пока ничего нет. Добавь треки или измени поиск.' : 'Пока нет музыки. Нажми «Добавить музыку» и выбери MP3, WAV, M4A или другой аудиофайл.';
+      trackList.appendChild(empty);
+      return;
+    }
+    for(const track of list){
+      const row = document.createElement('div');
+      row.className = 'track' + (track.id === currentId ? ' current' : '');
+      const cover = document.createElement('div');
+      cover.className = 'cover';
+      if(track.cover){
+        const img = document.createElement('img');
+        img.src = track.cover; img.alt = '';
+        cover.appendChild(img);
+      }else cover.textContent = '♫';
+      const info = document.createElement('div');
+      info.className = 'track-info';
+      const title = document.createElement('div');
+      title.className = 'track-title'; title.textContent = track.title || track.name;
+      const artist = document.createElement('div');
+      artist.className = 'track-artist'; artist.textContent = (track.artist || 'Неизвестный исполнитель') + (track.album ? ' · ' + track.album : '');
+      info.append(title,artist);
+      const coverTools = document.createElement('div');
+      coverTools.className = 'cover-tools';
+      const coverInput = document.createElement('input');
+      coverInput.type = 'file'; coverInput.accept = 'image/*';
+      const coverButton = document.createElement('button');
+      coverButton.type = 'button'; coverButton.textContent = '▧'; coverButton.title = 'Выбрать обложку';
+      coverButton.addEventListener('click',e=>{e.stopPropagation();coverInput.click();});
+      coverInput.addEventListener('change',async e=>{
+        const file=e.target.files && e.target.files[0];
+        if(!file) return;
+        if(!file.type.startsWith('image/')){setStatus('Выбери файл изображения.');return;}
+        if(file.size>5*1024*1024){setStatus('Обложка должна быть меньше 5 МБ.');return;}
+        const reader=new FileReader();
+        reader.onload=async()=>{
+          const previous=track.cover; track.cover=reader.result;
+          try{await transaction('readwrite',{type:'put',value:track});render();updatePlayer();setStatus('Обложка сохранена.');}
+          catch(error){track.cover=previous;setStatus('Не удалось сохранить обложку.');}
+        };
+        reader.onerror=()=>setStatus('Не удалось прочитать изображение.');
+        reader.readAsDataURL(file);
+      });
+      coverTools.append(coverButton,coverInput);
+      const editButton=document.createElement('button');
+      editButton.className='edit-track';editButton.textContent='✎';editButton.title='Изменить название и исполнителя';
+      editButton.addEventListener('click',async e=>{
+        e.stopPropagation();
+        const newTitle=prompt('Название песни:',track.title||track.name);
+        if(newTitle===null) return;
+        const newArtist=prompt('Исполнитель:',track.artist||'');
+        if(newArtist===null) return;
+        const newAlbum=prompt('Альбом:',track.album||'');
+        if(newAlbum===null) return;
+        const oldTitle=track.title,oldArtist=track.artist,oldAlbum=track.album;
+        track.title=newTitle.trim()||track.name;track.artist=newArtist.trim();track.album=newAlbum.trim();
+        try{await transaction('readwrite',{type:'put',value:track});render();updatePlayer();setStatus('Информация о треке сохранена.');}
+        catch(error){track.title=oldTitle;track.artist=oldArtist;track.album=oldAlbum;setStatus('Не удалось сохранить изменения.');}
+      });
+      const fav = document.createElement('button');
+      fav.title = 'Добавить в избранное'; fav.textContent = track.favorite ? '♥' : '♡';
+      fav.addEventListener('click', async e => {
+        e.stopPropagation();
+        track.favorite = !track.favorite;
+        try{ await transaction('readwrite',{type:'put',value:track}); render(); }
+        catch(error){ setStatus('Не удалось сохранить избранное.'); }
+      });
+      if(view === 'playlist'){
+        const removeFrom = document.createElement('button');
+        removeFrom.className = 'add-playlist';
+        removeFrom.title = 'Убрать из плейлиста'; removeFrom.textContent = '−';
+        removeFrom.addEventListener('click', e => { e.stopPropagation(); removeFromPlaylist(track.id); });
+        row.append(cover,info,coverTools,editButton,fav,removeFrom);
+        row.addEventListener('click', () => playTrack(track.id));
+        trackList.appendChild(row);
+        continue;
+      }
+      const addPlaylist = document.createElement('button');
+      addPlaylist.className = 'add-playlist';
+      addPlaylist.title = 'Добавить в выбранный плейлист'; addPlaylist.textContent = '＋';
+      addPlaylist.addEventListener('click', e => { e.stopPropagation(); addToSelectedPlaylist(track); });
+      const remove = document.createElement('button');
+      remove.title = 'Удалить трек'; remove.textContent = '✕';
+      remove.addEventListener('click', async e => {
+        e.stopPropagation();
+        await removeTrack(track.id);
+      });
+      const queueButton=document.createElement('button');
+      queueButton.className='add-playlist';queueButton.title='Добавить в очередь';queueButton.textContent='⇥';
+      queueButton.addEventListener('click',e=>{e.stopPropagation();addToQueue(track);});
+      row.append(cover,info,coverTools,editButton,fav,addPlaylist,queueButton,remove);
+      row.addEventListener('click', () => playTrack(track.id));
+      trackList.appendChild(row);
+    }
+  }
+  function updatePlayer(){
+    const track = currentTrack();
+    $('nowTitle').textContent = track ? (track.title || track.name) : 'Ничего не играет';
+    $('nowArtist').textContent = track ? (track.artist || 'AZYRO') : 'Добавь свои аудиофайлы';
+    $('playPause').textContent = audio.paused ? '▶' : 'Ⅱ';
+    $('playerCover').replaceChildren();
+    if(track && track.cover){
+      const img = document.createElement('img'); img.src = track.cover; img.alt = '';
+      $('playerCover').appendChild(img);
+    }else $('playerCover').textContent = '♫';
+    $('bigTitle').textContent = track ? (track.title || track.name) : 'Ничего не играет';
+    $('bigArtist').textContent = track ? (track.artist || 'AZYRO') : 'Добавь свои аудиофайлы';
+    $('bigCover').replaceChildren();
+    if(track && track.cover){const big=document.createElement('img');big.src=track.cover;big.alt='';$('bigCover').appendChild(big);}
+    else $('bigCover').textContent='♫';
+    $('bigPlay').textContent=audio.paused?'▶':'Ⅱ';
+    render();
+  }
+  async function playTrack(id){
+    const track = tracks.find(t => t.id === id);
+    if(!track) return;
+    if(currentUrl){ URL.revokeObjectURL(currentUrl); currentUrl = null; }
+    currentId = id;
+    historyIds = [id, ...historyIds.filter(item=>item!==id)].slice(0,30);
+    saveHistory(); renderHistory();
+    currentUrl = URL.createObjectURL(track.file);
+    audio.src = currentUrl;
+    updatePlayer();
+    try{ await audio.play(); setStatus('Сейчас играет: ' + (track.title || track.name)); }
+    catch(error){ setStatus('Файл выбран. Нажми ▶, чтобы начать воспроизведение.'); }
+  }
+  async function removeTrack(id){
+    try{
+      await transaction('readwrite',{type:'delete',value:id});
+      tracks = tracks.filter(t => t.id !== id);
+      queueIds = queueIds.filter(item=>item!==id);
+      historyIds = historyIds.filter(item=>item!==id); saveHistory();
+      renderQueue(); renderHistory();
+      if(currentId === id){
+        audio.pause(); audio.removeAttribute('src'); audio.load();
+        if(currentUrl){ URL.revokeObjectURL(currentUrl); currentUrl = null; }
+        currentId = null;
+      }
+      updatePlayer();
+      setStatus('Трек удалён из библиотеки.');
+    }catch(error){ setStatus('Не удалось удалить трек.'); }
+  }
+  async function addFiles(files){
+    const selected = Array.from(files || []);
+    if(!selected.length) return;
+    let added = 0, skipped = 0;
+    for(const file of selected){
+      const valid = (file.type && file.type.startsWith('audio/')) || /\.(mp3|wav|ogg|m4a|aac|flac|opus|aiff?)$/i.test(file.name);
+      if(!valid){ skipped++; continue; }
+      const track = {
+        id:makeId(), name:file.name,
+        title:file.name.replace(/\.[^.]+$/,''),
+        artist:'', album:'', file, cover:null, favorite:false
+      };
+      try{
+        await transaction('readwrite',{type:'put',value:track});
+        tracks.push(track); added++;
+      }catch(error){
+        setStatus('Не удалось сохранить ' + file.name + '. Проверь свободное место браузера.');
+      }
+    }
+    render();
+    if(!currentId && tracks.length) await playTrack(tracks[tracks.length - 1].id);
+    setStatus('Добавлено: ' + added + (skipped ? '. Пропущено неподдерживаемых файлов: ' + skipped : '') + '.');
+    fileInput.value = '';
+  }
+  function orderedTracks(){
+    if(view === 'playlist' && activeQueue) playOrder = activeQueue.slice();
+    else if(!playOrder.length) playOrder = tracks.map(t => t.id);
+    playOrder = playOrder.filter(id => tracks.some(t => t.id === id));
+    if(shuffled){
+      const rest = playOrder.filter(id => id !== currentId);
+      for(let i=rest.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [rest[i],rest[j]]=[rest[j],rest[i]]; }
+      return (currentId ? [currentId] : []).concat(rest);
+    }
+    return tracks.map(t => t.id);
+  }
+  async function stepTrack(direction){
+    if(direction > 0 && queueIds.length){
+      const queuedId=queueIds.shift(); renderQueue(); await playTrack(queuedId); return;
+    }
+    const order = orderedTracks();
+    if(!order.length) return;
+    let index = order.indexOf(currentId);
+    if(index < 0) index = direction > 0 ? -1 : 0;
+    let nextIndex = index + direction;
+    if(nextIndex < 0 || nextIndex >= order.length){
+      if(repeatMode === 2) nextIndex = (nextIndex + order.length) % order.length;
+      else { if(direction > 0) setStatus('Плейлист закончился.'); return; }
+    }
+    await playTrack(order[nextIndex]);
+  }
+  $('addButton').addEventListener('click',()=>fileInput.click());
+  $('addTop').addEventListener('click',()=>fileInput.click());
+  fileInput.addEventListener('change',()=>addFiles(fileInput.files));
+  $('search').addEventListener('input',render);
+  $('sortTracks').addEventListener('change',render);
+  $('createPlaylist').addEventListener('click',createPlaylist);
+  $('clearQueue').addEventListener('click',()=>{queueIds=[];renderQueue();setStatus('Очередь очищена.');});
+  $('clearHistory').addEventListener('click',()=>{historyIds=[];saveHistory();renderHistory();setStatus('История очищена.');});
+  $('playlistName').addEventListener('keydown',e=>{if(e.key==='Enter') createPlaylist();});
+  $('favoritesFilter').addEventListener('click',()=>{view='favorites';activeQueue=null;syncNav();render();});
+  $('allFilter').addEventListener('click',()=>{view='all';selectedAlbum=null;activeQueue=null;syncNav();render();});
+  function syncNav(){ document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view)); }
+  document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;if(view!=='albums')selectedAlbum=null;activeQueue=null;syncNav();render();}));
+  function showNowPlaying(open){
+    $('nowPlayingOverlay').classList.toggle('open',open);
+    $('nowPlayingOverlay').setAttribute('aria-hidden',String(!open));
+  }
+  $('openNowPlaying').addEventListener('click',()=>{updatePlayer();showNowPlaying(true);});
+  $('closeNowPlaying').addEventListener('click',()=>showNowPlaying(false));
+  $('nowPlayingOverlay').addEventListener('click',e=>{if(e.target===$('nowPlayingOverlay'))showNowPlaying(false);});
+  $('bigPrevious').addEventListener('click',()=>{if(audio.currentTime>3)audio.currentTime=0;else stepTrack(-1);});
+  $('bigNext').addEventListener('click',()=>stepTrack(1));
+  $('bigPlay').addEventListener('click',()=>$('playPause').click());
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')showNowPlaying(false);});
+  $('playPause').addEventListener('click',async()=>{
+    if(!currentTrack()){ if(tracks.length) await playTrack(tracks[0].id); else {fileInput.click();} return; }
+    if(audio.paused){ try{await audio.play();}catch(e){setStatus('Не удалось запустить этот аудиофайл.');} }
+    else audio.pause();
+    updatePlayer();
+  });
+  $('previous').addEventListener('click',()=>{ if(audio.currentTime>3){audio.currentTime=0;} else stepTrack(-1); });
+  $('next').addEventListener('click',()=>stepTrack(1));
+  $('shuffle').addEventListener('click',()=>{shuffled=!shuffled;$('shuffle').style.color=shuffled?'#e879f9':'';setStatus(shuffled?'Перемешивание включено.':'Обычный порядок.');});
+  $('repeat').addEventListener('click',()=>{repeatMode=(repeatMode+1)%3;$('repeat').style.color=repeatMode?'#e879f9':'';$('repeat').textContent=repeatMode===1?'↻¹':'↻';setStatus(['Повтор выключен.','Повтор одного трека.','Повтор всего списка.'][repeatMode]);});
+  audio.addEventListener('play',updatePlayer);
+  audio.addEventListener('pause',updatePlayer);
+  audio.addEventListener('loadedmetadata',()=>{$('duration').textContent=formatTime(audio.duration);});
+  audio.addEventListener('timeupdate',()=>{
+    $('elapsed').textContent=formatTime(audio.currentTime);
+    $('duration').textContent=formatTime(audio.duration);
+    if(Number.isFinite(audio.duration) && audio.duration>0) $('progress').value=String(Math.round(audio.currentTime/audio.duration*1000));
+  });
+  $('progress').addEventListener('input',()=>{
+    if(Number.isFinite(audio.duration) && audio.duration>0) audio.currentTime=(Number($('progress').value)/1000)*audio.duration;
+  });
+  audio.addEventListener('ended',async()=>{
+    if(repeatMode===1){audio.currentTime=0;try{await audio.play();}catch(e){}}
+    else await stepTrack(1);
+  });
+  window.addEventListener('beforeunload',()=>{if(currentUrl) URL.revokeObjectURL(currentUrl);});
+  async function start(){
+    try{
+      db=await openDatabase();
+      tracks=await transaction('readonly',{type:'all'});
+      playlists=await playlistTransaction('readonly',{type:'all'});
+      tracks.sort((a,b)=>(a.name||'').localeCompare(b.name||'','ru'));
+      playOrder=tracks.map(t=>t.id);
+      renderPlaylists(); renderQueue(); renderHistory(); render(); updatePlayer();
+      setStatus('AZYRO готов. В библиотеке треков: '+tracks.length+'.');
+    }catch(error){
+      trackList.innerHTML='<div class="empty">Не удалось открыть локальное хранилище. Открой файл в актуальном Chrome, Edge, Firefox или Safari через обычную вкладку браузера.</div>';
+      setStatus('Ошибка запуска: '+(error.message||'хранилище недоступно'));
+    }
+  }
+  start();
+})();
+
+  // PWA: service worker and installation prompt (requires HTTPS or localhost).
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+  let deferredInstallPrompt = null;
+  const installButton = $('installApp');
+  const iosTip = $('iosInstallTip');
+  window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    installButton.style.display = 'block';
+  });
+  installButton.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    installButton.style.display = 'none';
+  });
+  window.addEventListener('appinstalled', () => {
+    installButton.style.display = 'none';
+    setStatus('AZYRO установлено на устройство!');
+  });
+  const isIosDevice = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  if (isIosDevice && !isStandalone) {
+    // Show iOS instructions only when served from a web origin, not file://.
+    if (location.protocol === 'https:') iosTip.style.display = 'block';
+  }
+  $('closeIosTip').addEventListener('click', () => { iosTip.style.display = 'none'; });
+
+</script>
+</body>
+</html>
